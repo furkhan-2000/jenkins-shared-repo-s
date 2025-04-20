@@ -1,3 +1,6 @@
 def call(){
-  echo "hii this is form jenkins-git for shared libraries"
-}
+  sh "mkdir deleteplease"
+  sh "rmdir deleteplease"
+  sh "oberoie"
+  echo "please delete oberoie"
+  sh "rm -rf oberoie"
