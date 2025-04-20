@@ -1,3 +1,3 @@
 def call(){
-  echo "hello Dosto
+  echo "hii this is form jenkins-git for shared libraries"
 }
