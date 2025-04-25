@@ -1,14 +1,18 @@
-def call(String project, String imageTag) {
+def call(String project,
+         String imageTag,
+         String credentialsId = 'dockerHubCred') {
+
     withCredentials([usernamePassword(
-        credentialsId: 'dockerHubCred',
+        credentialsId: credentialsId,
         usernameVariable: 'DOCKERHUB_USERNAME',
         passwordVariable: 'DOCKERHUB_PASSWORD'
     )]) {
-        echo "This is tagging part"
         sh "docker tag ${project}:${imageTag} ${DOCKERHUB_USERNAME}/${project}:${imageTag}"
+
         sh "docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}"
-        echo "Successfully logged in as ${DOCKERHUB_USERNAME}"
+
         sh "docker push ${DOCKERHUB_USERNAME}/${project}:${imageTag}"
-        echo "Successfully pushed image"
+
+        echo "Docker image push complete"
     }
 }
