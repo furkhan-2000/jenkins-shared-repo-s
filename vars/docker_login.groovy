@@ -1,4 +1,4 @@
-def call(String project, String imageTag, String credentialsId = 'dockerHubCred') {
+def call(String project, String imageTag, String credentialsId = 'dockerhubCred') {
     steps.withCredentials([steps.usernamePassword(
         credentialsId: credentialsId,
         usernameVariable: 'DOCKERHUB_USERNAME',
