@@ -39,8 +39,8 @@ pipeline {
                     sh """
                         git clone ${GIT_REPO} k8-hosp
                         cd k8-hosp
-                        sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${DOCKER_TAG}|g" k8-hosp/blood-report-k8.yaml
-                        sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:${DOCKER_TAG}|g" k8-hosp/urine-report-k8.yaml
+                        sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:blood-${DOCKER_TAG}|g" k8-hosp/blood-report-k8.yaml
+                        sed -i "s|image: ${DOCKER_IMAGE}:.*|image: ${DOCKER_IMAGE}:urine-${DOCKER_TAG}|g" k8-hosp/urine-report-k8.yaml
                         git config user.name "bottle"
                         git config user.email "bottle12@gmail.com"
                         git add k8-hosp/blood-report-k8.yaml k8-hosp/urine-report-k8.yaml
