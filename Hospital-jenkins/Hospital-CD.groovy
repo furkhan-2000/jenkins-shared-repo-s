@@ -44,7 +44,7 @@ pipeline {
                         git config user.name "bottle"
                         git config user.email "bottle12@gmail.com"
                         git add k8-hosp/blood-report-k8.yaml k8-hosp/urine-report-k8.yaml
-                        git commit -m "Updated image tag to ${DOCKER_TAG} for both blood and urine deployments"
+                        git commit -m "Updated image tag to ${DOCKER_TAG} for both blood and urine deployments [ci skip]"
                         git push https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/furkhan-2000/Hospital-Proj.git
                     """
                 }
