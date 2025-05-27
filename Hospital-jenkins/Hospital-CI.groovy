@@ -25,7 +25,7 @@ pipeline {
                 }
             }
         }
-        stage('Sonar Analysis & Quality Gate') {
+        stage('SASAT') {
                     steps {
                         withSonarQubeEnv('sonar') {
                             sh "${SONAR_HOME}/bin/sonar-scanner -Dsonar.projectName=Hospital-Proj -Dsonar.projectKey=Hospital-Proj"
@@ -33,7 +33,7 @@ pipeline {
                         }
                     }
                 }
-        stage('Sonar Quality Gates') {
+        stage('Quality Gates') {
                     steps {
                         timeout(time: 2, unit: 'MINUTES') {
                             script {
