@@ -3,9 +3,6 @@ pipeline {
     environment {
         SONAR_HOME = tool 'sonar'
     }
-    options {
-        scmSkip(skipIfCommitMatches: /.*\[ci skip\].*/)
-    }
     stages {
         stage('cleaning') {
             steps {
