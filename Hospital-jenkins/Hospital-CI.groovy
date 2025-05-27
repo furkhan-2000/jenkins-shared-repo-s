@@ -26,8 +26,6 @@ pipeline {
             }
         }
         stage('Sonar Analysis & Quality Gate') {
-            parallel {
-                stage('SAST - SonarQube Analysis') {
                     steps {
                         withSonarQubeEnv('sonar') {
                             sh "${SONAR_HOME}/bin/sonar-scanner -Dsonar.projectName=Hospital-Proj -Dsonar.projectKey=Hospital-Proj"
@@ -35,11 +33,11 @@ pipeline {
                         }
                     }
                 }
-                stage('Sonar Quality Gates') {
+        stage('Sonar Quality Gates') {
                     steps {
                         timeout(time: 2, unit: 'MINUTES') {
                             script {
-                                def qg = waitForQualityGate()
+                                def qg = waitForQualityGate(abortPipeline: false)
                                 if (qg.status != "OK") {
                                     error "Quality Gate Failed: ${qg.status}"
                                 }
@@ -48,8 +46,6 @@ pipeline {
                         echo "Quality gate passed"
                     }
                 }
-            }
-        }
         stage('OWASP Dependency Check') {
             steps {
                 timeout(time: 27, unit: 'MINUTES') {
