@@ -4,6 +4,20 @@ pipeline {
         SONAR_HOME = tool 'sonar'
     }
     stages {
+        stage('Check for [ci skip]') {
+            steps {
+                script {
+                    def commitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    echo "Latest commit message: ${commitMsg}"
+                    if (commitMsg.contains("[ci skip]")) {
+                        echo "Detected [ci skip] token. Skipping CI pipeline."
+                        // Mark build as SUCCESS (if desired) then stop further execution.
+                        currentBuild.result = 'SUCCESS'
+                        error("CI skipped due to [ci skip] token.")
+                    }
+                }
+            }
+        }
         stage('cleaning') {
             steps {
                 cleanWs()
