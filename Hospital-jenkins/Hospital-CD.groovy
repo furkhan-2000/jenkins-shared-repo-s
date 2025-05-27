@@ -21,8 +21,8 @@ pipeline {
         stage('Verify Image Tag') {
             steps {
                 script {
-                    if (!env.DOCKER_TAG?.trim() ) {
-                    error "Image form CI not found"
+                    if (!env.DOCKER_TAG?.trim()) {
+                        error "Image from CI not found"
                     }
                     echo "Latest Image found: ${env.DOCKER_TAG}"
                 }
@@ -53,45 +53,34 @@ pipeline {
 
         stage('Check Rollout Status') {
             steps {
-                script {
-                    def bloodStatus = sh(
-                        script: "kubectl rollout status deployment/blood --namespace=prod --timeout=90s",
-                        returnStatus: true
-                    )
-                    if (bloodStatus != 0) {
-                        echo "Blood deployment rollout failed. Attempting rollback..."
-                        sh "kubectl rollout undo deployment/blood --namespace=prod"
-                        def bloodRollbackStatus = sh(
-                            script: "kubectl rollout status deployment/blood --namespace=prod --timeout=90s",
-                            returnStatus: true
-                        )
-                        if (bloodRollbackStatus != 0) {
-                            error "Blood deployment rollback failed; manual intervention required."
+                withCredentials([string(credentialsId: 'kubernetesCred', variable: 'KUBE_TOKEN')]) {
+                    script {
+                        def bloodStatus = sh(script: "kubectl --token=$KUBE_TOKEN rollout status deployment/blood --namespace=prod --timeout=90s", returnStatus: true)
+                        if (bloodStatus != 0) {
+                            echo "Blood deployment rollout failed. Attempting rollback..."
+                            sh "kubectl --token=$KUBE_TOKEN rollout undo deployment/blood --namespace=prod"
+                            def bloodRollbackStatus = sh(script: "kubectl --token=$KUBE_TOKEN rollout status deployment/blood --namespace=prod --timeout=90s", returnStatus: true)
+                            if (bloodRollbackStatus != 0) {
+                                error "Blood deployment rollback failed; manual intervention required."
+                            } else {
+                                echo "Blood deployment failed, but rollback succeeded."
+                            }
                         } else {
-                            echo "Blood deployment failed, but rollback succeeded."
+                            echo "Blood deployment is healthy."
                         }
-                    } else {
-                        echo "Blood deployment is healthy."
-                    }
-
-                    def urineStatus = sh(
-                        script: "kubectl rollout status deployment/urine --namespace=prod --timeout=90s",
-                        returnStatus: true
-                    )
-                    if (urineStatus != 0) {
-                        echo "Urine deployment rollout failed. Attempting rollback..."
-                        sh "kubectl rollout undo deployment/urine --namespace=prod"
-                        def urineRollbackStatus = sh(
-                            script: "kubectl rollout status deployment/urine --namespace=prod --timeout=90s",
-                            returnStatus: true
-                        )
-                        if (urineRollbackStatus != 0) {
-                            error "Urine deployment rollback failed; manual intervention required."
+                        def urineStatus = sh(script: "kubectl --token=$KUBE_TOKEN rollout status deployment/urine --namespace=prod --timeout=90s", returnStatus: true)
+                        if (urineStatus != 0) {
+                            echo "Urine deployment rollout failed. Attempting rollback..."
+                            sh "kubectl --token=$KUBE_TOKEN rollout undo deployment/urine --namespace=prod"
+                            def urineRollbackStatus = sh(script: "kubectl --token=$KUBE_TOKEN rollout status deployment/urine --namespace=prod --timeout=90s", returnStatus: true)
+                            if (urineRollbackStatus != 0) {
+                                error "Urine deployment rollback failed; manual intervention required."
+                            } else {
+                                echo "Urine deployment rollback succeeded."
+                            }
                         } else {
-                            echo "Urine deployment rollback succeeded."
+                            echo "Urine deployment is healthy."
                         }
-                    } else {
-                        echo "Urine deployment is healthy."
                     }
                 }
             }
