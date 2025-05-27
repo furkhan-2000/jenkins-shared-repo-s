@@ -4,7 +4,7 @@ pipeline {
         SONAR_HOME = tool 'sonar'
     }
     options {
-        scmSkip(skipPattern: /.*\[ci skip\].*/)
+        scmSkip(skipPattern: /.*\[ci skip\].*/)  
     }
     stages {
         stage('cleaning') {
